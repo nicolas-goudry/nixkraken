@@ -37,20 +37,24 @@
       # nix fmt
       formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
 
+      gitkraken = eachSystem (
+        pkgs:
+        import ./gitkraken.nix {
+          inherit (pkgs) lib;
+          inherit pkgs;
+        }
+      );
+
       # Packages
       packages = eachSystem (
         pkgs:
-        let
-          args = {
-            inherit (pkgs) lib;
-            inherit pkgs;
-          };
-        in
         {
           docs = pkgs.callPackage ./docs { };
         }
-        // (import ./pkgs args)
-        // (import ./gitkraken.nix args)
+        // (import ./pkgs {
+          inherit (pkgs) lib;
+          inherit pkgs;
+        })
       );
 
       # Development environment with packages used by the module available in PATH

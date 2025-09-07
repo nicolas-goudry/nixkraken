@@ -40,8 +40,7 @@
       gitkraken = eachSystem (
         pkgs:
         import ./gitkraken.nix {
-          inherit (pkgs) lib;
-          inherit pkgs;
+          inherit (pkgs) lib system;
         }
       );
 

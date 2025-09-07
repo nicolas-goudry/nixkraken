@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, system, ... }:
 
 let
   fromNixpkgs =
@@ -9,7 +9,7 @@ let
         sha256 = hash;
       })
       {
-        inherit (pkgs) system;
+        inherit system;
         config.allowUnfree = true;
       }
     ).gitkraken;

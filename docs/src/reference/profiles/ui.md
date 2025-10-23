@@ -62,7 +62,7 @@ Default directory to open terminal tabs into.
 
 **Scope:** <Badge type="tip"><i class="fa-solid fa-users"></i> Profile</Badge>
 
-**Type:** null or path
+**Type:** null or absolute path
 
 **Default:** `null`
 

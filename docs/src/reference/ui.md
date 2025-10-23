@@ -63,7 +63,7 @@ Default directory to open terminal tabs into.
 
 **Scope:** <Badge type="tip"><i class="fa-solid fa-users"></i> Profile</Badge>
 
-**Type:** null or path
+**Type:** null or absolute path
 
 **Default:** `null`
 
@@ -227,7 +227,7 @@ Refer to the [theming guide](../guide/user/theming.md) for further details.
 
 **Scope:** <Badge type="tip"><i class="fa-solid fa-globe"></i> Global</Badge>
 
-**Type:** list of path
+**Type:** list of absolute path
 
 **Default:** `[ ]`
 

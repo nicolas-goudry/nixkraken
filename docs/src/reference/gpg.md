@@ -25,7 +25,7 @@ When unset, GitKraken will use the [global git configuration value](https://git-
 
 **Scope:** <Badge type="tip"><i class="fa-solid fa-users"></i> Profile</Badge>
 
-**Type:** null or path
+**Type:** null or absolute path
 
 **Default:** `null`
 
@@ -116,7 +116,7 @@ When [`gpg.format`](#gpgformat) is set to `ssh`, this is the path to the SSH pri
 
 **Scope:** <Badge type="tip"><i class="fa-solid fa-users"></i> Profile</Badge>
 
-**Type:** null or string or path
+**Type:** null or string or absolute path
 
 **Default:** `config.programs.git.signing.key`
 

@@ -31,7 +31,7 @@ Extra options passed to the editor when opening a file.
 
 ::: info
 
-This option will not have any effect unless a custom external editor is set with [`tools.editor.package`](/reference/tools.md#toolseditorpackage).
+This option will not have any effect unless a custom external editor is set with [`tools.editor.package`](/reference/tools.md#tools-editor-package).
 
 The following variables are available:
 
@@ -86,7 +86,7 @@ Extra options passed to the terminal.
 
 ::: info
 
-This option will not have any effect unless a custom external terminal is set with [`tools.terminal.package`](/reference/tools.md#toolsterminalpackage).
+This option will not have any effect unless a custom external terminal is set with [`tools.terminal.package`](/reference/tools.md#tools-terminal-package).
 
 The following variable is available:
 

@@ -17,7 +17,7 @@ Path to the SSH private key file to use.
 
 **Scope:** <Badge type="tip"><i class="fa-solid fa-users"></i> Profile</Badge>
 
-**Type:** null or path
+**Type:** null or absolute path
 
 **Default:** `null`
 
@@ -27,7 +27,7 @@ Path to the SSH public key file to use.
 
 **Scope:** <Badge type="tip"><i class="fa-solid fa-users"></i> Profile</Badge>
 
-**Type:** null or path
+**Type:** null or absolute path
 
 **Default:** `null`
 

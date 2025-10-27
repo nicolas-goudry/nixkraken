@@ -1,0 +1,58 @@
+name: Documentation
+
+on:
+  workflow_dispatch:
+  push: &triggers
+    branches:
+      - main
+    paths:
+      - docs/**/*
+  pull_request: *triggers
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: wimpysworld/nothing-but-nix@main
+        with:
+          hatchet-protocol: holster
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build documentation
+        run: nix-build ./docs --arg isCI $CI
+      - name: Upload built documentation
+        uses: actions/upload-artifact@v5
+        with:
+          name: docs
+          path: result
+
+  deploy:
+    needs: build
+    if: success() && github.ref_name == 'main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: wimpysworld/nothing-but-nix@main
+        with:
+          hatchet-protocol: holster
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Retrieve built documentation
+        uses: actions/download-artifact@v6
+        with:
+          name: docs
+          path: result
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'result'
+      - uses: actions/deploy-pages@v4
+        id: deployment

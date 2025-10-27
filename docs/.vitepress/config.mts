@@ -3,10 +3,14 @@ import implicitFigures from 'markdown-it-implicit-figures'
 import { defineConfig } from 'vitepress'
 import { mermaidPlugin } from './plugins/vitepress-mermaid'
 
+const BASE_PATH=process.env.CI ? '/nixkraken/' : '/'
+const ROOT_URL=`https://github.com/nicolas-goudry${BASE_PATH}`
+
+
 export default defineConfig({
   srcDir: 'src',
   title: 'NixKraken',
-  base: process.env.CI ? '/nixkraken/' : '/',
+  base: BASE_PATH,
 
   lastUpdated: true,
   metaChunk: true,
@@ -20,6 +24,18 @@ export default defineConfig({
       })
       md.use(mermaidPlugin)
     }
+  },
+
+  themeConfig: {
+    logo: { src: '/nixkraken-logo.svg', width: 24, height: 24 },
+
+    socialLinks: [
+      { icon: 'github', link: ROOT_URL },
+    ],
+
+    search: { provider: 'local' },
+
+    outline: { level: [2, 4] },
   },
 
   head: [
@@ -38,21 +54,17 @@ export default defineConfig({
       'meta',
       {
         property: 'og:image',
-        content: 'https://nicolas-goudry.github.io/nixkraken/nixkraken-logo.svg'
+        content: `${ROOT_URL}nixkraken-logo.svg`,
       }
     ],
-    ['meta', { property: 'og:url', content: 'https://nicolas-goudry.github.io/nixkraken' }],
+    ['meta', { property: 'og:url', content: ROOT_URL }],
   ],
 
-  themeConfig: {
-    logo: { src: '/nixkraken-logo.svg', width: 24, height: 24 },
-
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/nicolas-goudry/nixkraken' },
-    ],
-
-    search: { provider: 'local' },
-
-    outline: { level: [2, 4] },
+  sitemap: {
+    hostname: 'https://nicolas-goudry.github.io',
+    transformItems: (items) => items.map((item) => {
+      item.url = `${BASE_PATH}${item.url}`
+      return item
+    }),
   },
 })

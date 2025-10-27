@@ -8,11 +8,12 @@ with subtest("GitKraken profile name is customized"):
     # Disable splashscreen with '--show-splashscreen' ('-s') set to false
     machine1.succeed("gitkraken --no-sandbox -s false >&2 &")
 
-    # Wait for window to show up
-    # WARN: for some reason, this succeeds a few seconds before the window actually
-    #       shows up on screen, hence the sleep delay
+    # Wait for GitKraken to fully start
+    # This is required to avoid having X11 window tree mutate mid-query with 'wait_for_window'
+    machine1.sleep(30)
+
+    # Ensure GitKraken window exists
     machine1.wait_for_window("GitKraken Desktop")
-    machine1.sleep(15)
 
     # Check if profile name is customized
     # NOTE: we have to loosely test this since OCR is not very precise with case detection

@@ -2,6 +2,16 @@ name: End-to-end tests
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - gitkraken/versions.nix
+      - module.nix
+      - modules/**/*
+      - pkgs/configure/*
+      - pkgs/theme/*
+      - tests/**/*
   push:
     branches:
       - main

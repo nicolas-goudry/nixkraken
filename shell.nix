@@ -8,7 +8,7 @@ in
 pkgs.mkShellNoCC {
   nativeBuildInputs =
     (with pkgs; [
-      convco
+      cocogitto
       mdbook
       mdbook-alerts
       mdbook-linkcheck

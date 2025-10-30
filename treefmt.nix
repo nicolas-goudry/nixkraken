@@ -6,6 +6,7 @@ _:
 
   programs.nixfmt.enable = true;
   programs.black.enable = true;
+  programs.toml-sort.enable = true;
 
   programs.prettier = {
     enable = true;

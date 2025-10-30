@@ -18,3 +18,23 @@ post_package_bump_hooks = []
 [changelog]
 
 [commit_types]
+
+[git_hooks.commit-msg]
+script = """#!/usr/bin/env bash
+set -e
+cog verify --file $1
+cog check || true
+"""
+
+[git_hooks.pre-push]
+script = """#!/usr/bin/env bash
+if command -v nix >/dev/null \
+  && [ -f /etc/nix/nix.conf ] \
+  && [[ "$(grep -E '^experimental-features =' /etc/nix/nix.conf | awk -F'=' '{print $2}' | xargs)" =~ (flakes|nix-commands) ]]
+then
+  system=$(nix eval --impure --expr "builtins.currentSystem")
+  nix build ".#checks.$system.all"
+else
+  >&2 echo "WARNING: Nix Flakes and/or new commands are not enabled! Evaluation checks will not be performed."
+fi
+"""

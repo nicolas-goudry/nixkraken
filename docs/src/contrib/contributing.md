@@ -9,7 +9,7 @@
 [doc-tests]: ./tests/intro.md
 [doc-themes]: ./themes.md
 [garnix]: https://garnix.io
-[git-hooks]: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
+[git-hooks]: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hook
 [github-coc]: https://github.com/nicolas-goudry/nixkraken/blob/main/CODE_OF_CONDUCT.md
 [github-fork]: https://github.com/nicolas-goudry/nixkraken/fork
 [github-hooks]: https://github.com/nicolas-goudry/nixkraken/blob/main/.hooks

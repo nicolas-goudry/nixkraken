@@ -1,4 +1,4 @@
-[convco]: https://convco.github.io
+[cocogitto]: https://docs.cocogitto.io
 [conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/#specification
 [determinate-nix]: https://determinate.systems/nix
 [direnv]: https://direnv.net
@@ -12,7 +12,6 @@
 [git-hooks]: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
 [github-coc]: https://github.com/nicolas-goudry/nixkraken/blob/main/CODE_OF_CONDUCT.md
 [github-fork]: https://github.com/nicolas-goudry/nixkraken/fork
-[github-hooks]: https://github.com/nicolas-goudry/nixkraken/blob/main/.hooks
 [github-issues]: https://github.com/nicolas-goudry/nixkraken/issues
 [github-prs]: https://github.com/nicolas-goudry/nixkraken/pulls
 [github-shell]: https://github.com/nicolas-goudry/nixkraken/blob/main/shell.nix
@@ -114,7 +113,7 @@ Please find below the lifecycle of a contribution to NixKraken:
 
 ::: info
 
-We use [convco][convco] to enforce conventional commits.
+We use [Cocogitto][cocogitto] to enforce conventional commits.
 
 :::
 
@@ -168,8 +167,9 @@ This development shell does several things:
 - add [mdBook][mdbook] package and required plugins, for building documentation
 - add [NodeJS][nodejs] package, for building options reference documentation
 - add [helper packages][doc-pkgs], for testing and debugging
-- add [convco][convco], for enforcing conventional commits
-- install [Git hooks][git-hooks] located in the [`.hooks` directory][github-hooks]
+- add [Cocogitto][cocogitto], for:
+  - enforcing conventional commits
+  - installing [Git hooks][git-hooks]
 
 Enabling the development shell can be done in various ways:
 

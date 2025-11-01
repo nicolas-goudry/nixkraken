@@ -5,7 +5,7 @@
 }:
 
 let
-  inherit (pkgs) lib system;
+  inherit (pkgs) lib;
 
   versions = import ./versions.nix;
 
@@ -17,7 +17,7 @@ let
         sha256 = hash;
       })
       {
-        inherit system;
+        system = pkgs.stdenv.hostPlatform.system;
 
         config.allowUnfreePredicate =
           pkg:

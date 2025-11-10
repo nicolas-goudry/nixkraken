@@ -34,7 +34,7 @@
         pkgs:
         let
           checks = {
-            formatting = treefmtEval.${pkgs.system}.config.build.check self;
+            formatting = treefmtEval.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
           };
         in
         checks
@@ -44,7 +44,7 @@
       );
 
       # nix fmt
-      formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
+      formatter = eachSystem (pkgs: treefmtEval.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper);
 
       # Packages
       packages = eachSystem (

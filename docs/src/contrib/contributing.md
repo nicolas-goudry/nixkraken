@@ -202,6 +202,8 @@ If working on [`shell.nix`][github-shell], do not forget to run `direnv reload` 
 
 _…that is the question!_
 
-The main distribution method for NixKraken is through [Flakes][nixos-wiki-flakes]. However, we do not want to alienate users who do not use them, nor do we want to force its use on everyone. Our goal is to satisfy everyone.
+The main distribution method for NixKraken is through [Flakes][nixos-wiki-flakes]. However, we do not want to alienate users who do not use them, nor do we want to force its use on everyone.
 
-For this reason, all [Nix][nix-manual-language] code in the repository **must be compatible with both Flakes and non Flakes setups**. This means that building any of the tools provided by the project should work either with `nix build` and `nix-build`. This also means that all documentation bits should provide instructions for both worlds.
+For this reason, all [Nix][nix-manual-language] code in the repository **must be compatible with both Flakes and non Flakes setups**, whenever possible.
+
+This means that building any of the tools provided by the project should work either with `nix build` and `nix-build`. This also means that all documentation bits should provide instructions for both worlds.

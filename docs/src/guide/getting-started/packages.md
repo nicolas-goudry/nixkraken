@@ -8,6 +8,8 @@
 [hm-standalone]: https://nix-community.github.io/home-manager/index.xhtml#sec-install-standalone
 [hm-useglobalpkgs]: https://nix-community.github.io/home-manager/index.xhtml#sec-install-nixos-module
 [hm]: https://nix-community.github.io/home-manager
+[loc-gitkraken-themes]: #themes
+[loc-gitkraken]: #gitkraken-package
 [nixos-manual]: https://nixos.org/manual/nixos/stable
 [nixos-opt-nixpkgs-overlays]: https://search.nixos.org/options?channel=25.05&show=nixpkgs.overlays&query=nixpkgs.overlays&size=1
 [nixos-wiki-flakes]: https://wiki.nixos.org/wiki/Flakes
@@ -19,54 +21,16 @@
 
 NixKraken ships complementary packages which can be used alongside the [Home Manager][hm] module:
 
-- `gitkraken`: [GitKraken][gitkraken] package used by the module
-- `gitkraken-themes`: collection of bundled themes for GitKraken
-
-## GitKraken Package
-
-The `gitkraken` package distributes unmodified [GitKraken][gitkraken] versions from [nixpkgs][gh-nixpkgs] which are compatible with the [Home Manager][hm] module.
-
-By default, it tracks the latest version, but it can also be used to install prior GitKraken versions:
-
-```nix{3,6}
-{
-  home.packages = with pkgs; [
-    # Latest supported version
-    gitkraken
-
-    # Specific version (supported by NixKraken)
-    gitkraken.override { version = "11.3.0"; }
-  ];
-}
-```
-
-Internally, this package is used to cache GitKraken packages. See the [caching guide][doc-caching] for further details.
-
-## Themes
-
-The `gitkraken-themes` package is a collection of packages bundling various [GitKraken][gitkraken] themes which can be used with the relevant module options:
-
-```nix{5-7}
-{
-  programs.nixkraken = {
-    enable = true;
-
-    ui.extraThemes = with pkgs; [
-      gitkraken-themes.catppuccin
-    ];
-  };
-}
-```
-
-Please refer to the [theming guide][doc-theming] for further details on their usage.
+- [`gitkraken`][loc-gitkraken]: GitKraken package used by the module
+- [`gitkraken-themes`][loc-gitkraken-themes]: collection of bundled themes for [GitKraken][gitkraken]
 
 ## Installation
 
 There are various ways to provide the packages to your configuration.
 
-The examples below showcase both [overlays][nixpkgs-manual-overlays] and [Home Manager `extraSpecialArgs`][hm-extraspecialargs], but there might be other undocumented ways to make the packages available to your configuration.
+The examples below showcase both [overlays][nixpkgs-manual-overlays] and [Home Manager's `extraSpecialArgs`][hm-extraspecialargs], but there might be other undocumented ways to make the packages available to your configuration.
 
-Feel free to contribute additional ways to provide them!
+_Feel free to contribute additional ways to provide them!_
 
 ### Overlays
 
@@ -234,3 +198,43 @@ nixosConfigurations."your-hostname" = nixpkgs.lib.nixosSystem {
   ];
 };
 ```
+
+## What Is in the Box?
+
+### GitKraken Package
+
+The `gitkraken` package distributes unmodified [GitKraken][gitkraken] versions from [nixpkgs][gh-nixpkgs] which are compatible with the [Home Manager][hm] module.
+
+By default, it tracks the latest version, but it can also be used to install prior GitKraken versions:
+
+```nix{3,6}
+{
+  home.packages = with pkgs; [
+    # Latest supported version
+    gitkraken
+
+    # Specific version (supported by NixKraken)
+    gitkraken.override { version = "11.3.0"; }
+  ];
+}
+```
+
+Internally, this package is used to cache GitKraken packages. See the [caching guide][doc-caching] for further details.
+
+### Themes
+
+The `gitkraken-themes` package is a collection of packages bundling various [GitKraken][gitkraken] themes which can be used with the relevant module options:
+
+```nix{5-7}
+{
+  programs.nixkraken = {
+    enable = true;
+
+    ui.extraThemes = with pkgs; [
+      gitkraken-themes.catppuccin
+    ];
+  };
+}
+```
+
+Please refer to the [theming guide][doc-theming] for further details on their usage.

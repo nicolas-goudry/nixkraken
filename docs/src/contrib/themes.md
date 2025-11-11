@@ -7,6 +7,7 @@
 [hm]: https://nix-community.github.io/home-manager/index.xhtml
 [jsonc]: https://jsonc.org
 [loc-build]: #build
+[loc-internals]: #internals
 [loc-multiple-variants]: #multiple-variants
 [loc-single-variant]: #single-variant
 [nix-manual-drv]: https://nix.dev/manual/nix/stable/language/derivations.html
@@ -28,9 +29,60 @@ For end-user usage within NixKraken and the list of available themes, see the [t
 
 ## Build
 
-The main entry point for building themes is [`themes/default.nix`][repo-themes-default]. It defines a "dummy" [derivation][nix-manual-drv] that exposes all theme sets as attributes of its [`passthru` attribute][nixpkgs-manual-passthru].
+The main entry point for building themes is [`themes/default.nix`][repo-themes-default]. It defines a [derivation][nix-manual-drv] that does two things:
 
-Example builds:
+- bundle all theme sets as part of the derivation build
+- expose all theme sets as attributes of its [`passthru` attribute][nixpkgs-manual-passthru]
+
+### All theme sets
+
+```sh
+# Build all theme sets using new Nix commands
+$ nix build '.#gitkraken-themes'
+```
+
+```sh
+# ...or classic Nix commands
+$ nix-build ./themes
+```
+
+The `result` directory will bundle all theme sets and their respective theme files in subdirectories named after the theme set, as shown below:
+
+```txt
+result
+├── catppuccin
+│   ├── catppuccin-frappe.jsonc
+│   ├── catppuccin-latte.jsonc
+│   ├── catppuccin-macchiato.jsonc
+│   ├── catppuccin-mocha.jsonc
+│   └── VERSION
+├── celestial-dark/
+├── color-blind/
+├── dracula/
+├── matcha-dark-sea/
+├── monochrome/
+├── monokai/
+├── night-owl/
+├── nineteen-eighty-four/
+├── nord/
+├── oled-dream/
+├── one-dark/
+├── poimandres/
+├── solarized/
+├── the-matrix/
+├── tokyo-night/
+└── umbraco-dark/
+
+18 directories, 41 files
+```
+
+::: info
+
+This output is an example of the `result` directory built at the time of writing, actual content may change if themes are added/removed.
+
+:::
+
+### Specific theme set
 
 ```sh
 # Build Catppuccin theme set using new Nix commands
@@ -42,6 +94,16 @@ $ nix build '.#gitkraken-themes.catppuccin'
 $ nix-build ./themes -A catppuccin
 ```
 
+```txt
+result
+├── catppuccin-frappe.jsonc
+├── catppuccin-latte.jsonc
+├── catppuccin-macchiato.jsonc
+└── catppuccin-mocha.jsonc
+
+1 directory, 4 files
+```
+
 ## Directory Structure
 
 Here is an overview of the [`themes` directory][repo-themes-root] structure:
@@ -49,26 +111,29 @@ Here is an overview of the [`themes` directory][repo-themes-root] structure:
 ```txt
 themes
 ├── sets
-│   ├── catppuccin.nix
-│   ├── color-blind.nix
-│   ├── dracula.nix
+│   ├── catppuccin
+│   │   └── package.nix
+│   ├── celestial-dark
+│   │   ├── celestial-dark.jsonc
+│   │   └── package.nix
+│   ├── color-blind/
+│   ├── dracula/
 │   └── ...
 └── default.nix
 ```
 
-All themes lives in `themes/sets` in `.nix` files named after the theme. The basename (without `.nix`) is the attribute used for theme selection in the entry point.
+All theme sets live in `themes/sets` under directories named after the set. The set directory is the attribute used for theme selection in the entry point.
+
+Each set must define a `package.nix` file holding the [derivation code][loc-internals], and may optionally include additional files needed for building the derivation.
 
 ## Internals
 
 Each theme is a [Nix function][nix-manual-functions] that returns a [derivation][nix-manual-drv]. Theme derivations must:
 
-1. Install [JSONC][jsonc] files to the derivation output root (`$out`)
-
-   - required because the [`ui.extraThemes` option][doc-opt-extrathemes] passes the [Nix store][nix-manual-store] path to the [`gk-theme` package][doc-theme-pkg], which expects JSONC files at the directory root.
-
+1. Install [JSONC][jsonc] files to the derivation output (`$out`)
 2. Expose variant filenames via [`passthru` attribute][nixpkgs-manual-passthru]
 
-   - define a `passthru` attribute that maps the logical variant to the exact JSONC filename GitKraken expects in `ui.theme`
+   - define a `passthru` attribute that maps the logical variant to the exact JSONC filename that GitKraken expects in `ui.theme`
    - for single-variant themes, set `passthru.default` to the filename
 
 There are two common patterns, depending on whether the theme has a [single variant][loc-single-variant] or [multiple variants][loc-multiple-variants].

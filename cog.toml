@@ -5,19 +5,41 @@ disable_changelog = false
 disable_bump_commit = false
 generate_mono_repository_global_tag = true
 generate_mono_repository_package_tags = true
+monorepo_version_separator = "/"
 branch_whitelist = ["main"]
 skip_ci = "[skip ci]"
 skip_untracked = false
 pre_bump_hooks = []
 post_bump_hooks = []
-pre_package_bump_hooks = []
 post_package_bump_hooks = []
+pre_package_bump_hooks = [
+  "echo 'upgrading {{package}} to {{version}}'",
+  ".cog/pre {{latest|1.0.0}} {{version}}"
+]
 
 [bump_profiles]
 
 [changelog]
+path = "CHANGELOG.md"
+template = "full_hash"
+authors = [
+  {username = "nicolas-goudry", signature = "Nicolas Goudry"}
+]
 
 [commit_types]
+feat = {changelog_title = "✨ New Features"}
+fix = {changelog_title = "🐛 Bug Fixes"}
+perf = {changelog_title = "🚀 Performance Improvements"}
+docs = {changelog_title = "📚 Documentation Updates"}
+test = {changelog_title = "🧪 Tests"}
+refactor = {changelog_title = "🧹 Code Refactoring"}
+style = {changelog_title = "🎨 Code Style & Formatting"}
+# Omit from changelogs
+ci = {omit_from_changelog = true}
+chore = {omit_from_changelog = true}
+# Disable entirely
+revert = {}
+build = {}
 
 [git_hooks.commit-msg]
 script = """#!/usr/bin/env bash

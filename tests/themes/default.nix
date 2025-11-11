@@ -17,7 +17,7 @@ in
       ];
 
       home-manager.users.root.programs.nixkraken.ui = {
-        extraThemes = gitkraken-themes.all;
+        extraThemes = [ gitkraken-themes ];
         theme = gitkraken-themes.catppuccin.mocha;
       };
     }

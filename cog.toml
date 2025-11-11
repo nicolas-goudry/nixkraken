@@ -3,7 +3,9 @@ ignore_merge_commits = false
 ignore_fixup_commits = true
 disable_changelog = false
 disable_bump_commit = false
-generate_mono_repository_global_tag = true
+# Skip global tag (nixkraken releases) for now
+# TODO: set to true once release process is done and validated
+generate_mono_repository_global_tag = false
 generate_mono_repository_package_tags = true
 monorepo_version_separator = "/"
 branch_whitelist = ["main"]

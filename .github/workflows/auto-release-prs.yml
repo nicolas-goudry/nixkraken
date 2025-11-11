@@ -1,0 +1,148 @@
+name: Release proposals
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  detect-bumps:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.parse.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect packages to bump
+        uses: cocogitto/cocogitto-action@v4
+        id: cog
+        with:
+          command: bump
+          args: '--auto --dry-run'
+      - name: Parse output
+        id: parse
+        run: |
+          # Initialize packages to bump empty array
+          packages=$(jq <<<"[]")
+
+          # Process each bump reported by cog (stdout is multiline, use xargs to make it space-separated)
+          # This will not run if there's no bump, since there's no stdout, hence passing an empty array as output
+          for bump in $(echo "${{ steps.cog.outputs.stdout }}" | xargs echo); do
+            # Test if bump is for a package
+            if [[ "$bump" == */* ]]; then
+              package=$(echo $bump | cut -d/ -f1)
+              version=$(echo $bump | cut -d/ -f2)
+            # Else it's root package: nixkraken itself
+            else
+              # Skip for now
+              # TODO: remove
+              continue
+              package="nixkraken"
+              version=$bump
+            fi
+
+            # Ensure package has been initialized once (version is not 0.x) and force 1.0.0 if not
+            if [[ "$version" == 0.* ]]; then
+              version="1.0.0"
+            fi
+
+            # Append to the packages to bump array
+            packages=$(jq -rc --arg package $package --arg version $version '. += [{ package: $package, version: $version }]' <<<"$packages")
+          done
+
+          # Report as output for matrix use in next job
+          echo "packages=$packages" >> $GITHUB_OUTPUT
+
+  release-proposal:
+    needs: detect-bumps
+    # When no bump is needed the packages array still exists but is empty
+    if: needs.detect-bumps.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.detect-bumps.outputs.packages) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Cocogitto
+        uses: cocogitto/cocogitto-action@v4
+        with:
+          command: '-V'
+      - name: Bump ${{ matrix.package.package }} to ${{ matrix.package.version }}
+        id: bump
+        run: |
+          version="${{ matrix.package.package }}/${{ matrix.package.version }}"
+          if [[ "${{ matrix.package.package }}" == "nixkraken" ]]; then
+            # Disable packages tags generation
+            # This is required since in a monorepo setup, cog will bump global tag and packages tags and there is no way
+            # to force it to only bump global tag through CLI arguments
+            sed -i 's/^generate_mono_repository_package_tags.*/generate_mono_repository_package_tags = false/' cog.toml
+            # Disable bump commit, since we commit when creating the PR, which also allows us to provide a custom commit message
+            cog bump --version "${{ matrix.package.version }}" --disable-bump-commit
+            git restore cog.toml
+            # Update version output for nixkraken since it's not prepended by a package name
+            version="${{ matrix.package.version }}"
+          else
+            # Disable bump commit, since we commit when creating the PR, which also allows us to provide a custom commit message
+            cog bump --package "${{ matrix.package.package }}" --version "${{ matrix.package.version }}" --disable-bump-commit
+          fi
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Extract changelog
+        id: changelog
+        run: |
+          # Get path to changelog file in git changes
+          CHANGELOG_FILE=$(git diff --name-only HEAD | grep "CHANGELOG.md")
+
+          if [[ -z "$CHANGELOG_FILE" ]]; then
+            echo "::warning::No CHANGELOG.md found"
+            echo "content=No changelog available" >> $GITHUB_OUTPUT
+            # We still want the PR to be created, we can investigate from there why there's no changelog (this shouldn't happen though)
+            exit 0
+          fi
+
+          # Extract the changelog content for this version
+          # We use `steps.bump.outputs.version` since it's what is written to the changelog heading
+          # We delete the last extracted line with sed '$d' to get rid of "- - -"
+          # We also remove the version heading from changelog with tail
+          CHANGELOG=$(sed -n '\|^## ${{ steps.bump.outputs.version }}|,/^- - -/p' $CHANGELOG_FILE | sed '$d' | tail -n +2)
+
+          if [[ -z "$CHANGELOG" ]]; then
+            echo "::warning::No changelog entry found for ${{ matrix.package.package }} version ${{ matrix.package.version }}"
+            echo "content=No changelog entry found for this version" >> $GITHUB_OUTPUT
+            # We still want the PR to be created, we can investigate from there why there's no changelog (this shouldn't happen though)
+            exit 0
+          fi
+
+          # Set changelog content as multiline step output
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 'chore(release/${{ matrix.package.package }}): ${{ matrix.package.version }}'
+          branch: 'release/${{ matrix.package.package }}'
+          delete-branch: true
+          sign-commits: true
+          title: 'chore(release/${{ matrix.package.package }}): ${{ matrix.package.version }}'
+          body: |
+            ## :rocket: Release Proposal
+
+            ### Changelog
+
+            ${{ steps.changelog.outputs.content }}
+
+            ---
+
+            This PR is automatically updated on each commit to the main branch that affects the ${{ matrix.package.package }} package.
+            Merge when ready to release version `${{ matrix.package.version }}`.
+
+            _Auto-generated by: [auto-bump workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})._
+          labels: 'release'
+          assignees: 'nicolas-goudry'
+          reviewers: 'nicolas-goudry'

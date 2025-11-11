@@ -1,0 +1,153 @@
+name: Bump package version
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to bump'
+        required: true
+        type: choice
+        options:
+          - gitkraken-themes
+      kind:
+        description: 'Version to bump to'
+        required: true
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+          - custom
+      version:
+        description: 'Custom version to bump to (if custom selected)'
+        required: false
+        type: string
+      dry_run:
+        description: 'Preview changes without committing'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compute Cocogitto command arguments from inputs
+        id: cog
+        run: |
+          msg="Bump ${{ inputs.kind }} version of ${{ inputs.package }}"
+          args="--package ${{ inputs.package }}"
+          if [[ "${{ inputs.kind }}" == "custom" ]]; then
+            if [[ -z "${{ inputs.version }}" ]]; then
+              >&2 echo "Version is required when bump kind is custom."
+              exit 1
+            fi
+            msg="Bump ${{ inputs.package }} to ${{ inputs.version }}"
+            args+=" --version ${{ inputs.version }}"
+          else
+            if [[ "${{ inputs.kind }}" == "auto" ]]; then
+              msg="Auto bump ${{ inputs.package}}"
+            fi
+            args+=" --${{ inputs.kind }}"
+          fi
+          echo "args=$args" >> $GITHUB_OUTPUT
+          echo "msg=$msg" >> $GITHUB_OUTPUT
+      - name: ${{ steps.cog.outputs.msg }}
+        uses: cocogitto/cocogitto-action@v4
+        id: release
+        with:
+          command: 'bump'
+          args: '${{ steps.cog.outputs.args }}'
+          git-user: 'Cocogitto Bot'
+          git-user-email: 'nixkraken@cocogitto.io'
+      - name: Show changes (dry run)
+        if: ${{ inputs.dry_run }}
+        run: |
+          echo "::warning::DRY RUN MODE"
+          echo " "
+          echo "#####################"
+          echo "# TAG (NOT APPLIED) #"
+          echo "#####################"
+          echo ${{ steps.release.outputs.version }}
+          echo " "
+          echo "########################"
+          echo "# COMMIT (NOT APPLIED) #"
+          echo "########################"
+          git show
+      - name: Extract changelog
+        if: ${{ !inputs.dry_run }}
+        id: changelog
+        run: |
+          CHANGELOG_FILE=$(git diff --name-only HEAD~1 HEAD | grep "CHANGELOG.md")
+
+          if [[ -z "$CHANGELOG_FILE" ]]; then
+            echo "::warning::No CHANGELOG.md found"
+            echo "content=No changelog available" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          CHANGELOG=$(sed -n "\|^## ${{ steps.release.outputs.version }}|,/^- - -/p" $CHANGELOG_FILE | sed '$d' | tail -n +2)
+
+          if [[ -z "$CHANGELOG" ]]; then
+            echo "::warning::No changelog entry found for ${{ steps.release.outputs.version }}"
+            CHANGELOG="No changelog entry found for this version"
+          fi
+
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Create Pull Request
+        if: ${{ !inputs.dry_run }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: ${{ steps.cog.outputs.msg }}
+          branch: release/${{ inputs.package }}-${{ steps.release.outputs.version }}
+          delete-branch: true
+          title: ${{ steps.cog.outputs.msg }}
+          body: |
+            ## Changelog
+
+            ${{ steps.changelog.outputs.content }}
+
+            ---
+
+            This PR was automatically created by the version bump workflow.
+
+            **Package:** `${{ inputs.package }}`
+            **Version:** `${{ steps.release.outputs.version }}`
+          labels: |
+            release
+            automated
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 'chore(release): ${{ steps.release.outputs.version }}'
+          branch: 'release/${{ steps.release.outputs.version }}'
+          delete-branch: true
+          sign-commits: true
+          title: 'chore(release): ${{ steps.release.outputs.version }}'
+          body: |
+            ## Changelog
+
+            ${{ steps.changelog.outputs.content }}
+
+            ---
+
+            This PR was automatically created by the [cocogitto-bump workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
+            **Inputs:**
+            - Package: `${{ inputs.package }}`
+            - Kind: `${{ inputs.kind }}`
+            - Version: `${{ inputs.version }}`
+            - Dry-Run: `${{ inputs.dry-run }}`
+          labels: 'release'
+          assignees: 'nicolas-goudry'
+          reviewers: 'nicolas-goudry'

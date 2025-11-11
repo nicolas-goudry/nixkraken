@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+CURRENT="$1"
+NEXT="$2"
+
+sed -i 's/\(.*version = "\)'"$CURRENT"'/\1'"$NEXT"'/' package.nix

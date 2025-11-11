@@ -63,7 +63,14 @@ else
 fi
 """
 
-# Themes
-[packages.gitkraken-themes]
-path = "themes"
-public_api = false
+[packages]
+deep-json-diff = {path = "gitkraken/utils/deep-json-diff", public_api = false}
+docs = {path = "docs", public_api = false}
+gitkraken-themes = {path = "themes", public_api = false}
+gk-app-extractor = {path = "gitkraken/utils/app-extractor", public_api = false}
+gk-config-discovery = {path = "gitkraken/utils/config-discovery", public_api = false}
+gk-configure = {path = "pkgs/configure", public_api = true}
+gk-decrypt = {path = "pkgs/decrypt", public_api = true}
+gk-encrypt = {path = "pkgs/encrypt", public_api = true}
+gk-login = {path = "pkgs/login", public_api = true}
+gk-theme = {path = "pkgs/theme", public_api = true}

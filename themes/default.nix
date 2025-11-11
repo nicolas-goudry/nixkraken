@@ -14,6 +14,8 @@ let
   };
 in
 runCommand "nixkraken-themes" {
+  version = "1.0.0";
+
   passthru = allThemes // {
     all = lib.attrValues allThemes;
   };

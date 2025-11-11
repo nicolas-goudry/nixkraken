@@ -180,7 +180,7 @@ def install_themes_from(lookup_path: Path) -> None:
         return
 
     count = 0
-    for theme_path in lookup_path.glob("*.jsonc"):
+    for theme_path in lookup_path.glob("**/*.jsonc"):
         install_theme(theme_path)
         count += 1
 

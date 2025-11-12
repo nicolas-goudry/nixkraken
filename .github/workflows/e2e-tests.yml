@@ -34,7 +34,6 @@ jobs:
         with:
           hatchet-protocol: holster
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Generate test matrix
         id: set-matrix
         run: |
@@ -64,7 +63,6 @@ jobs:
           extra-conf: |
             extra-substituters = https://cache.garnix.io
             extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
-      - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Run test '${{ matrix.tests }}' against GitKraken version ${{ matrix.versions }}
         run: |
           nix-build ./tests -A ${{ matrix.tests }} --argstr withVersion ${{ matrix.versions }}

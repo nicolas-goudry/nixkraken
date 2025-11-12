@@ -24,7 +24,6 @@ jobs:
         with:
           hatchet-protocol: holster
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Check formatting
         run: >
           { nix run '.#treefmt' -- docs --ci || true; } && git --no-pager diff --exit-code
@@ -59,7 +58,6 @@ jobs:
         with:
           hatchet-protocol: holster
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Build documentation
         run: nix-build ./docs --arg isCI $CI
       - name: Upload built documentation
@@ -81,7 +79,6 @@ jobs:
         with:
           hatchet-protocol: holster
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Retrieve built documentation
         uses: actions/download-artifact@v6
         with:

@@ -1,15 +1,13 @@
 name: Check flake
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
+  push: &triggers
     branches:
       - main
     paths:
       - '**.nix'
       - flake.lock
+  pull_request: *triggers
 
 jobs:
   flake-check:

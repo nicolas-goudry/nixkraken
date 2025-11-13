@@ -35,7 +35,7 @@ Here is a complete, minimal `flake.nix` for a standalone setup:
     };
 
     nixkraken = {
-      url = "github:nicolas-goudry/nixkraken";
+      url = "github:nicolas-goudry/nixkraken/@CURRENT_VERSION@";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -84,7 +84,7 @@ Here is a complete, minimal `flake.nix` for a NixOS setup:
     };
 
     nixkraken = {
-      url = "github:nicolas-goudry/nixkraken";
+      url = "github:nicolas-goudry/nixkraken/@CURRENT_VERSION@";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

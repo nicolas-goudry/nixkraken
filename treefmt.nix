@@ -15,6 +15,7 @@ _:
       "docs/src/reference/*"
       "docs/src/reference/**/*"
       "docs/.vitepress/plugins/vitepress-back-to-top-button/*"
+      "**/CHANGELOG.md"
     ];
   };
 

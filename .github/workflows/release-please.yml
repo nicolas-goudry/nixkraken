@@ -1,0 +1,49 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_ACCESS_TOKEN }}
+      - if: ${{ steps.release.outputs.release_created }} || ${{ steps.release.outputs.themes--release_created }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - if: ${{ steps.release.outputs.release_created }}
+        name: Build and upload NixKraken sources
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_ACCESS_TOKEN }}
+        run: |
+          archive_name="nixkraken-${{ steps.release.outputs.version }}.tar.gz"
+          tar czf $archive_name gitkraken modules pkgs themes LICENSE README.md flake.lock flake.nix module.nix
+          gh release upload ${{ steps.release.outputs.tag_name }} $archive_name
+      - if: ${{ steps.release.outputs.themes--release_created }}
+        uses: wimpysworld/nothing-but-nix@main
+        with:
+          hatchet-protocol: holster
+      - if: ${{ steps.release.outputs.themes--release_created }}
+        uses: DeterminateSystems/nix-installer-action@main
+      - if: ${{ steps.release.outputs.themes--release_created }}
+        name: Build and upload themes
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_ACCESS_TOKEN }}
+        run: |
+          nix build '.#gitkraken-themes'
+          archive_name="gitkraken-themes-${{ steps.release.outputs.themes--version }}.tar.gz"
+          tar czf $archive_name -C result .
+          gh release upload ${{ steps.release.outputs.themes--tag_name }} $archive_name

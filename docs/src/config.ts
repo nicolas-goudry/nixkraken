@@ -43,7 +43,7 @@ function nav(): DefaultTheme.NavItem[] {
       link: '/contrib/contributing',
       activeMatch: '/contrib/',
     },
-    { text: 'v11.1.0', link: '#' },
+    { text: 'Version: @CURRENT_VERSION@', link: '#' },
   ]
 }
 

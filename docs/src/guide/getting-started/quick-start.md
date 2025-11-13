@@ -40,7 +40,7 @@ Use the following content to create a `flake.nix` file, which sets [GitKraken][g
     };
 
     nixkraken = {
-      url = "github:nicolas-goudry/nixkraken";
+      url = "github:nicolas-goudry/nixkraken/@CURRENT_VERSION@";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

@@ -148,6 +148,7 @@ Here is a list of currently used markers:
 | `CACHED_COMMIT_LIST` | `src/guide/user/caching.md` | List of nixpkgs cached commits  |
 | `GK_<pkg>_USAGE`     | `src/contrib/pkgs`          | Usage output of `<pkg>` command |
 | `THEMES_LIST`        | `src/guide/user/theming.md` | List of bundled themes          |
+| `CURRENT_VERSION`    | Multiple places             | Current NixKraken version       |
 
 Additionally, most files located in the `reference` directory are automatically generated from NixKraken module's evaluated options. Identifying them is easy since they include a header with an explicit warning message:
 
@@ -451,3 +452,4 @@ As mentioned in the [generated content section][loc-gen-content], several marker
 - the `CACHED_COMMIT_LIST` marker is replaced by a Markdown list generated from the [GitKraken cached versions][repo-gitkraken-versions]
 - the `GK_<pkg>_USAGE` markers are replaced by running [helper packages][doc-pkgs] with the `--help` flag and using the output as replacement
 - the `THEMES_LIST` marker is replaced by a Markdown table describing all [bundled themes][repo-themes]
+- the `CURRENT_VERSION` marker is replaced by the content of the `version.txt` file

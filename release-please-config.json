@@ -1,5 +1,6 @@
 {
   "$schema": "https://github.com/googleapis/release-please/raw/refs/heads/main/schemas/config.json",
+  "bootstrap-sha": "e4849452a786eefe328e3f6973cdf302dada9640",
   "release-type": "simple",
   "changelog-sections": [
     { "type": "feat", "section": "✨ New Features" },

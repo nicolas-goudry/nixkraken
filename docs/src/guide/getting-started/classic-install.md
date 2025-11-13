@@ -44,7 +44,7 @@ let
   nixkraken = pkgs.fetchFromGitHub {
     owner = "nicolas-goudry";
     repo = "nixkraken";
-    rev = "main";
+    tag = "@CURRENT_VERSION@";
     # rev = "<branch-name|commit-sha>";
     hash = lib.fakeHash; # Make sure to read the callout below
   };
@@ -83,8 +83,8 @@ If other fetchers or a dependency pinning tool should be used, see the options b
 {
   imports = [
     "${pkgs.fetchzip {
-      url = "https://github.com/nicolas-goudry/nixkraken/archive/main.zip";
-      # url = "https://github.com/nicolas-goudry/nixkraken/archive/<branch-name|commit-sha>.zip";
+      url = "https://github.com/nicolas-goudry/nixkraken/archive/@CURRENT_VERSION@.zip";
+      # url = "https://github.com/nicolas-goudry/nixkraken/archive/<branch-name|tag-name|commit-sha>.zip";
       hash = lib.fakeHash;
     }}/module.nix"
   ];
@@ -104,7 +104,7 @@ See also: [Fetcher reference][nixpkgs-manual-fetchzip]
   imports = [
     "${pkgs.fetchgit {
       url = "https://github.com/nicolas-goudry/nixkraken.git";
-      rev = "main";
+      tag = "@CURRENT_VERSION@";
       # rev = "<branch-name|commit-sha>";
       hash = lib.fakeHash;
     }}/module.nix"
@@ -124,8 +124,8 @@ See also: [Fetcher reference][nixpkgs-manual-fetchgit]
 {
   imports = [
     "${builtins.fetchTarball {
-      url = "https://github.com/nicolas-goudry/nixkraken/archive/main.tar.gz";
-      # url = "https://github.com/nicolas-goudry/nixkraken/archive/<branch-name|commit-sha>.tar.gz";
+      url = "https://github.com/nicolas-goudry/nixkraken/archive/@CURRENT_VERSION@.tar.gz";
+      # url = "https://github.com/nicolas-goudry/nixkraken/archive/<branch-name|tag-name|commit-sha>.tar.gz";
       sha256 = lib.fakeSha256;
     }}/module.nix"
   ];
@@ -141,9 +141,9 @@ See also: [Fetcher reference][nix-manual-fetchtarball]
 #### [niv][niv]
 
 ```bash
-niv add nicolas-goudry/nixkraken
+niv add nicolas-goudry/nixkraken -r @CURRENT_VERSION@
 # niv add nicolas-goudry/nixkraken -b <branch-name>
-# niv add nicolas-goudry/nixkraken -r <commit-sha>
+# niv add nicolas-goudry/nixkraken -r <tag-name|commit-sha>
 ```
 
 ```nix{5}
@@ -165,9 +165,9 @@ These instructions are untested. Please [report an issue][gh-issues] if they are
 #### [npins][npins]
 
 ```bash
-npins add github nicolas-goudry nixkraken
-# npins add github -b <branch-name> nicolas-goudry nixkraken
-# npins add github --at <commit-sha> nicolas-goudry nixkraken
+npins add github nicolas-goudry nixkraken --at @CURRENT_VERSION@
+# npins add github nicolas-goudry nixkraken -b <branch-name>
+# npins add github nicolas-goudry nixkraken --at <tag-name|commit-sha>
 ```
 
 ```nix{5}
@@ -195,7 +195,10 @@ Users willing to avoid using `lib.fakeHash` can retrieve the release hash using 
 The command below outputs various information about NixKraken sources.
 
 ```bash
-nix-prefetch-git --url git@github.com:nicolas-goudry/nixkraken.git --quiet
+nix-prefetch-git \
+  --url git@github.com:nicolas-goudry/nixkraken.git \
+  --rev @CURRENT_VERSION@ \
+  --quiet
 ```
 
 Example response with the relevant `hash` key:
@@ -220,15 +223,16 @@ Tools like [jq][jq] can be used to extract it directly from the JSON output:
 ```bash
 nix-prefetch-git \
   --url git@github.com:nicolas-goudry/nixkraken.git \
+  --rev @CURRENT_VERSION@ \
   --quiet \
 | jq -r '.hash'
 ```
 
 ::: tip
 
-To retrieve the sources hash at a given point in history, use `--rev <commit-sha>`.
+To retrieve the sources hash for a given tag or at a given point in history, use `--rev <tag-name|commit-sha>`.
 
-To retrieve the sources hash for a given branch, use `--rev refs/heads/<branch-name>`.
+To retrieve the sources hash for a given branch, use `--rev refs/heads/<branch-name>`. For the `main` branch, you can omit the `--rev` flag altogether.
 
 :::
 
@@ -246,7 +250,7 @@ nix hash convert \
   --hash-algo sha256 \
   --from nix32 \
   "$(nix-prefetch-url \
-       --unpack "https://github.com/nicolas-goudry/nixkraken/archive/main.tar.gz")"
+       --unpack "https://github.com/nicolas-goudry/nixkraken/archive/@CURRENT_VERSION@.tar.gz")"
 ```
 
 ```bash
@@ -255,11 +259,11 @@ nix-hash \
   --to-sri \
   --type sha256 \
   "$(nix-prefetch-url \
-       --unpack "https://github.com/nicolas-goudry/nixkraken/archive/main.tar.gz")"
+       --unpack "https://github.com/nicolas-goudry/nixkraken/archive/@CURRENT_VERSION@.tar.gz")"
 ```
 
 ::: tip
 
-To retrieve the sources hash at a given point in history (branch or commit), replace `main.tar.gz` by `<branch-name|commit-sha>.tar.gz`.
+To retrieve the sources hash at a given point in history (branch, tag or commit), replace `@CURRENT_VERSION@.tar.gz` by `<branch-name|tag-name|commit-sha>.tar.gz`.
 
 :::

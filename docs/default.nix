@@ -99,9 +99,10 @@ buildNpmPackage rec {
     substituteInPlace src/guide/user/theming.md --subst-var-by THEMES_LIST '${lib.concatLines themesList}'
     ${commandUsagesBuilder}
     substituteInPlace \
-      src/guide/getting-started/flakes-install.md \
       src/guide/getting-started/classic-install.md \
+      src/guide/getting-started/flakes-install.md \
       src/guide/getting-started/quick-start.md \
+      src/guide/notes/compatibility.md \
       src/config.ts \
       --subst-var-by CURRENT_VERSION '${lib.replaceString "\n" "" currentVersion}'
 

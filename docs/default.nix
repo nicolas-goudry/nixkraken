@@ -61,6 +61,8 @@ let
       ''
     ) localPkgsNames
   );
+
+  currentVersion = builtins.readFile ../version.txt;
 in
 buildNpmPackage rec {
   name = "nixkraken-docs";
@@ -96,6 +98,12 @@ buildNpmPackage rec {
     substituteInPlace src/guide/user/caching.md --subst-var-by CACHED_COMMIT_LIST '${lib.concatLines cachedCommitsList}'
     substituteInPlace src/guide/user/theming.md --subst-var-by THEMES_LIST '${lib.concatLines themesList}'
     ${commandUsagesBuilder}
+    substituteInPlace \
+      src/guide/getting-started/flakes-install.md \
+      src/guide/getting-started/classic-install.md \
+      src/guide/getting-started/quick-start.md \
+      src/config.ts \
+      --subst-var-by CURRENT_VERSION '${lib.replaceString "\n" "" currentVersion}'
 
     # Required to be able to detect when VitePress build is running in CI
     # Also unexpectedly fixes build hang due to ora spinner (see https://github.com/vuejs/vitepress/pull/5002)

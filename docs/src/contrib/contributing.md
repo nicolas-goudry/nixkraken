@@ -9,6 +9,7 @@
 [doc-tests]: ./tests/intro.md
 [doc-themes]: ./themes.md
 [garnix]: https://garnix.io
+[gh-release-please]: https://github.com/googleapis/release-please
 [git-hooks]: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
 [github-coc]: https://github.com/nicolas-goudry/nixkraken/blob/main/CODE_OF_CONDUCT.md
 [github-fork]: https://github.com/nicolas-goudry/nixkraken/fork
@@ -21,6 +22,7 @@
 [hm]: https://nix-community.github.io/home-manager/index.xhtml
 [jq]: https://jqlang.org
 [lix]: https://lix.systems
+[loc-devshell]: #nix-development-shell
 [lorri-github]: https://github.com/nix-community/lorri
 [markdown]: https://www.markdownguide.org
 [mdbook-alerts]: https://github.com/lambdalisue/rs-mdbook-alerts
@@ -91,29 +93,41 @@ Although this list could look quite daunting, do not run away yet. You will most
 
 ### Get Familiar with our Git Workflow
 
-As noted in the [compatibility section][doc-compat], we use a variety of branches to conduct work on NixKraken:
+As noted in the [compatibility section][doc-compat], we use Git tags to publish NixKraken releases.
 
-- `main`: this is the development branch, where all new (potentially unstable) features live
-- `stable`: this is a "dummy" branch which tracks the latest release branch commit
-- release branches: these are branches named after the GitKraken version they are known to be compatible with
+This process is automated by a [Release Please][gh-release-please] GitHub Actions workflow. Whenever changes that should result in a new release are merged, Release Please will open and maintain a _release proposal_ pull request.
 
-When contributing to NixKraken, you will either want to add something new or fix something broken. Your contribution could either target a specific release branch, or the development branch, or both.
+When contributing to NixKraken, you will typically be either:
 
-In the case of a fix or feature targeting both development and release branch(es), we prefer to first integrate the changes into the development branch, and only then backport them to the release branch(es).
+- adding something new - `feat`
+- fixing something broken - `fix`
 
-Please find below the lifecycle of a contribution to NixKraken:
+These are the primary [Conventional Commits][conventional-commits] types you will use. Both `feat` and `fix` commits are treated as release-relevant changes and will cause Release Please to create or update a release proposal PR.
+
+Once a release proposal PR is merged, the workflow will:
+
+1. Create a new Git tag at the tip of the merged branch
+2. Create a corresponding GitHub release
+
+At that point, your changes are available to all NixKraken users.
+
+#### Typical Contribution Lifecycle
+
+Below is the usual lifecycle of a contribution to NixKraken:
 
 1. [Fork the repository][github-fork]
-2. Work on your feature/bugfix in whatever branch you wish
-3. Commit your changes using [atomic commits][wikipedia-atomic-commits] and following [conventional commit style][conventional-commits]
-4. Open a [pull request][github-prs] to either the `main` branch or a specific release branch
-5. PR is merged
-6. Backport to release branch(es) happens, if relevant
-7. `stable` branch is updated, if relevant
+2. Create a new branch for your work (e.g. `feat/new-integration` or `fix/bug-123`)
+3. Implement your changes on that branch
+4. Commit your work as [atomic commits][wikipedia-atomic-commits], following [Conventional Commits][conventional-commits] specification
+5. Open a [pull request][github-prs] against the `main` branch
+6. Once your PR is approved and merged, a release proposal PR is created or updated
+7. On release proposal PR merge, Release Please will handle tagging and releasing
 
 ::: info
 
-We use [Cocogitto][cocogitto] to enforce conventional commits.
+We use [Cocogitto][cocogitto] to enforce Conventional Commits. If your commit messages do not follow the expected format, the checks will fail and you will be asked to adjust them.
+
+To speed up this process, you can use the provided [development shell][loc-devshell], which includes tooling and Git hooks configured to help you follow the expected commit format.
 
 :::
 

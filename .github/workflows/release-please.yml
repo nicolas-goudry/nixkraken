@@ -20,16 +20,18 @@ jobs:
         id: release
         with:
           token: ${{ secrets.RELEASE_PLEASE_ACCESS_TOKEN }}
-      - uses: wimpysworld/nothing-but-nix@main
-        with:
-          hatchet-protocol: holster
-      - uses: DeterminateSystems/nix-installer-action@main
       - if: ${{ steps.release.outputs.release_created }}
         name: Build and upload NixKraken sources
         run: |
           archive_name="nixkraken-${{ steps.release.outputs.version }}.tar.gz"
           tar czf $archive_name gitkraken modules pkgs themes LICENSE README.md flake.lock flake.nix module.nix
           gh release upload ${{ steps.release.outputs.tag_name }} $archive_name
+      - if: ${{ steps.release.outputs.themes--release_created }}
+        uses: wimpysworld/nothing-but-nix@main
+        with:
+          hatchet-protocol: holster
+      - if: ${{ steps.release.outputs.themes--release_created }}
+        uses: DeterminateSystems/nix-installer-action@main
       - if: ${{ steps.release.outputs.themes--release_created }}
         name: Build and upload themes
         run: |

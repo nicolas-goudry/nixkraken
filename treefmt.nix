@@ -16,6 +16,7 @@ _:
       "docs/src/reference/**/*"
       "docs/.vitepress/plugins/vitepress-back-to-top-button/*"
       "**/CHANGELOG.md"
+      ".release-please-manifest.json"
     ];
   };
 

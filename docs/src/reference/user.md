@@ -25,7 +25,7 @@ This option is required when [`skipTutorial`](/reference/root.md#skiptutorial) i
 
 **Type:** null or string
 
-**Default:** `config.programs.git.userEmail`
+**Default:** `config.programs.git.settings.user.email`
 
 **Example:** `email@example.com`
 
@@ -43,6 +43,6 @@ This option is required when [`skipTutorial`](/reference/root.md#skiptutorial) i
 
 **Type:** null or string
 
-**Default:** `config.programs.git.userName`
+**Default:** `config.programs.git.settings.user.name`
 
 **Example:** `John Doe`
